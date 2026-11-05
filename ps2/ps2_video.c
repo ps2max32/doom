@@ -175,7 +175,7 @@ void ps2_swap(void) {
     sec_frames = 0;
   }
   if (PS2_FRAMES && frames >= PS2_FRAMES) {
-    int r = mxgl_screenshot("host:doom.tga");
+    int r = mxgl_screenshot("doom.tga");
     mx_printf("ps2: %d frames, slowest second %d fps, %d fields dropped, picture %d\n", frames, fps_min, dropped, r);
     mx_printf("ps2: GS late %u, EE late %u fields\n", mx_gs.missed, mx_gs.starved);
     if (mxgl_mode_flags() & MXGL_BEAM)
@@ -257,8 +257,6 @@ void I_StartTic(void) {
   for (unsigned i = 0; i < sizeof pad_keys / sizeof pad_keys[0]; i++)
     if ((held ^ last) & pad_keys[i].bit)
       key(pad_keys[i].key, (held & pad_keys[i].bit) != 0);
-  if (held & ~last & MX_PAD_R3)
-    mxgl_show_stats = !mxgl_show_stats;
   last = held;
   u8 st[4];
   if (mx_pad_sticks(0, st)) {

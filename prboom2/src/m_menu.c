@@ -4772,6 +4772,8 @@ dboolean M_Responder (event_t* ev) {
   // Take care of any messages that need input
 
   if (messageToPrint) {
+    if (messageNeedsInput == true && ch == key_menu_enter)
+      ch = 'y'; // the pad has no Y
     if (messageNeedsInput == true &&
   !(ch == ' ' || ch == 'n' || ch == 'y' || ch == key_escape)) // phares
       return false;

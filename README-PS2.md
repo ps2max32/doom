@@ -16,7 +16,7 @@ PS2, without virtual memory.
 `FRAMES=n` ends the program after n frames with a picture (`host:doom.tga`), the slowest second,
 the fields dropped, the GS and beam racing counters and the audio's, then the test end marker.
 `ARGS` is added to the command line. Other variables: `PLAY=1` walks by script, `STATS=1` shows
-libgl's counters (R3 too), `MODE=n` sets libgl's mode (1 NTSC, 2 PAL, 3 1080i, +256 beam racing,
+libgl's counters (L3 + R3 too), `MODE=n` sets libgl's mode (1 NTSC, 2 PAL, 3 1080i, +256 beam racing,
 +512 24-bit).
 
 ## Picture
