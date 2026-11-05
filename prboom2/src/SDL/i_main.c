@@ -52,7 +52,9 @@ typedef BOOL (WINAPI *SetAffinityFunc)(HANDLE hProcess, DWORD mask);
 
 #include <errno.h>
 
+#ifndef __PS2__
 #include "TEXTSCREEN/txt_main.h"
+#endif
 
 #include "doomdef.h"
 #include "m_argv.h"
@@ -328,6 +330,7 @@ static void PrintVer(void)
 //
 static void I_EndDoom(void)
 {
+#ifndef __PS2__ // the text screen at the end: no console here
   int lump_eb, lump_ed, lump = -1;
 
   const unsigned char *endoom_data;
@@ -399,6 +402,7 @@ static void I_EndDoom(void)
     // Shut down text mode screen
     TXT_Shutdown();
   }
+#endif
 }
 
 // Schedule a function to be called when the program exits.
@@ -614,6 +618,9 @@ int main(int argc, char **argv)
   //jff 9/3/98 use logical output routine
   lprintf(LO_INFO,"M_LoadDefaults: Load system defaults.\n");
   M_LoadDefaults();              // load before initing other systems
+#ifdef __PS2__
+  { extern void ps2_defaults(void); ps2_defaults(); }
+#endif
 
   /* Version info */
   lprintf(LO_INFO,"\n");

@@ -421,6 +421,11 @@ void gld_InitOpenGL(dboolean compatibility_mode)
   GLEXT_CLAMP_TO_EDGE = (gl_version >= OPENGL_VERSION_1_2 ? GL_CLAMP_TO_EDGE : GL_CLAMP);
 
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &gl_max_texture_size);
+#ifdef __PS2__
+  // libgl's size is the one it asks games to scale to; this engine does not
+  // scale, and has patches 320 wide (the GS takes up to 1024)
+  gl_max_texture_size = 512;
+#endif
   lprintf(LO_INFO,"GL_MAX_TEXTURE_SIZE=%i\n", gl_max_texture_size);
 
   // Additional checks
@@ -446,6 +451,16 @@ void gld_InitOpenGL(dboolean compatibility_mode)
     GLEXT_CLAMP_TO_EDGE = GL_CLAMP;
     gl_version = OPENGL_VERSION_1_1;
   }
+#ifdef __PS2__
+  // libgl says 1.1, which turns the stencil off above; it has one, enough for
+  // flooding gaps, but not with beam racing: there flooding would show its masks
+  {
+    GLint bits = 0;
+    glGetIntegerv(GL_STENCIL_BITS, &bits);
+    gl_use_stencil = gl_use_stencil_default && bits > 0;
+    lprintf(LO_INFO, "gld_InitOpenGL: stencil %d (%d bits)\n", gl_use_stencil, bits);
+  }
+#endif
 
   //init states manager
   gld_EnableMultisample(true);
