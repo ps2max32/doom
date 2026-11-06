@@ -36,7 +36,7 @@ DCFLAGS  := $(TARGET) $(OPT) -std=gnu99 -w -MMD -fno-common -ffunction-sections 
             -fno-strict-aliasing -fsigned-char -ffast-math -fapprox-func -mvu0 \
             -nostdlibinc -isystem $(P)/include -isystem $(PICOLIBC)/include -D__PS2__ -D_GNU_SOURCE \
             -DNDEBUG -DHAVE_CONFIG_H -DGL_GLEXT_PROTOTYPES -include $(P)/ps2_math.h \
-            -I$(P) -I$(SRC) -I$(SRC)/MUSIC -I$(OUT)/gen -I$(MXGL_INC) -I$(MAXSDK)/include \
+            -I$(P) -I$(SRC) -I$(SRC)/MUSIC -I$(OUT)/gen -I$(MXGL_INC) -I$(MAXSDK)/ee/include \
             $(MXGL_DEFS) $(EXTRA_CFLAGS)
 
 COMMON   := am_map doomdef doomstat dstrings d_deh d_items d_main e6y f_finale f_finale2 f_wipe \
@@ -66,7 +66,7 @@ $(OUT)/ps2/%.o: $(P)/%.c $(CDEPS)
 	@mkdir -p $(dir $@)
 	$(CC) $(DCFLAGS) -c $< -o $@
 
-$(OUT)/libc/glue.o: $(MAXSDK)/libc/glue.c $(PICOLIBC_A) $(HERE)/Makefile
+$(OUT)/libc/glue.o: $(MAXSDK)/ee/libc/glue.c $(PICOLIBC_A) $(HERE)/Makefile
 	@mkdir -p $(dir $@)
 	$(CC) $(filter-out -ffreestanding,$(CFLAGS)) -nostdlibinc -isystem $(PICOLIBC)/include \
 	  -Dread=mx_glue_read -Dwrite=mx_glue_write -D_exit=mx_glue_exit -c $< -o $@
@@ -86,7 +86,7 @@ $(OUT)/doom.elf: $(OBJS) $(MXGL_OBJS) $(HLSL_OBJS) $(MX_LIB) $(MX_CRT0) $(MX_LD)
 
 $(PICOLIBC_A):
 	@mkdir -p $(LIBOUT)/picolibc
-	sed "s|@LLVM@|$(LLVM)|g" $(MAXSDK)/libc/cross-r5900.txt.in > $(LIBOUT)/picolibc/cross.txt
+	sed "s|@LLVM@|$(LLVM)|g" $(MAXSDK)/ee/libc/cross-r5900.txt.in > $(LIBOUT)/picolibc/cross.txt
 	meson setup --wipe $(LIBOUT)/picolibc/build-meson $(PICOLIBC_SRC) \
 	  --cross-file $(LIBOUT)/picolibc/cross.txt --prefix=$(PICOLIBC) -Dmultilib=false \
 	  -Dpicocrt=false -Dsemihost=false -Dtests=false -Dthread-local-storage=false \
