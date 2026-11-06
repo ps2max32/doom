@@ -13,6 +13,8 @@ MXGL     ?= $(PS2MAX)/libs/libgl
 LIBOUT   := $(PS2MAX)/build/apps/doom
 OUT      ?= $(LIBOUT)
 MX_MEMORY ?= phys
+# under mx-kernel, all in core (docs/kernel.md in maxsdk)
+MX_KERNEL ?= 1
 all: $(OUT)/doom.elf $(OUT)/prboom-plus.wad
 include $(MXGL)/mk/mxgl.mk
 include $(MAXSDK)/mk/maxsdk.mk
