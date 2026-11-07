@@ -183,7 +183,6 @@ void ps2_swap(void) {
                 mx_hires_stats.held, mx_hires_stats.rec_full, mx_hires_stats.pass_us[0],
                 mx_hires_stats.pass_us[1], mx_hires_stats.pass_us[2], mx_hires_stats.pass_us[3]);
     ps2_audio_report();
-    mx_printf("@@PS2TEST_END@@ status=0\n");
     mx_exit(0);
   }
 }
