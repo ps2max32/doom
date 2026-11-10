@@ -12,8 +12,11 @@ MAXSDK_OUT ?= $(PS2MAX)/build/libs/maxsdk
 MXGL     ?= $(PS2MAX)/libs/libgl
 LIBOUT   := $(PS2MAX)/build/apps/doom
 OUT      ?= $(LIBOUT)
-MX_MEMORY ?= phys
-# under mx-kernel, all in core (docs/kernel.md in maxsdk)
+# the program in VM (ld/maxsdk-vm.ld), started by the kernel (apps/mxos), paged
+# to host:doom.swp; MX_MEMORY=phys: all in physical memory, under the kernel all
+# the same (large maps run out: their textures show white)
+MX_MEMORY ?= vm
+# phys: under mx-kernel, all in core (docs/kernel.md in maxsdk)
 MX_KERNEL ?= 1
 all: $(OUT)/doom.elf $(OUT)/prboom-plus.wad
 include $(MXGL)/mk/mxgl.mk
@@ -76,13 +79,13 @@ $(OUT)/libc/glue.o: $(MAXSDK)/ee/libc/glue.c $(PICOLIBC_A) $(HERE)/Makefile
 # line; MODE: libgl's mode whatever the settings (1 NTSC, 2 PAL, 3 1080i, +256 beam
 # racing, +512 24-bit)
 RUNCFG   := $(OUT)/gen/runcfg.h
-$(shell mkdir -p $(OUT)/gen; printf '#define PS2_FRAMES %s\n#define PS2_ARGS "%s"\n#define PS2_PLAY %s\n#define PS2_STATS %s\n#define PS2_MODE (%s)\n' \
-  '$(or $(FRAMES),0)' '$(ARGS)' '$(or $(PLAY),0)' '$(or $(STATS),0)' '$(or $(MODE),-1)' > $(RUNCFG).new; \
+$(shell mkdir -p $(OUT)/gen; printf '#define PS2_FRAMES %s\n#define PS2_ARGS "%s"\n#define PS2_PLAY %s\n#define PS2_STATS %s\n#define PS2_MODE (%s)\n#define PS2_VM %s\n' \
+  '$(or $(FRAMES),0)' '$(ARGS)' '$(or $(PLAY),0)' '$(or $(STATS),0)' '$(or $(MODE),-1)' '$(if $(filter vm,$(MX_MEMORY)),1,0)' > $(RUNCFG).new; \
   cmp -s $(RUNCFG).new $(RUNCFG) || mv $(RUNCFG).new $(RUNCFG); rm -f $(RUNCFG).new)
 
 $(MXGL_OBJS): $(PICOLIBC_A)
 $(OUT)/doom.elf: $(OBJS) $(MXGL_OBJS) $(HLSL_OBJS) $(MX_LIB) $(MX_CRT0) $(MX_LD) $(LIBC_LIBS)
-	$(call link,$@,-z muldefs --error-limit=0 --defsym=__stack_size=0x100000 $(MX_CRT0) $(OBJS) $(MXGL_OBJS) $(HLSL_OBJS) $(LIBC_LIBS))
+	$(call link,$@,-z muldefs --error-limit=0 --defsym=__mx_stack_size=0x100000 $(MX_CRT0) $(OBJS) $(MXGL_OBJS) $(HLSL_OBJS) $(LIBC_LIBS))
 
 $(PICOLIBC_A):
 	@mkdir -p $(LIBOUT)/picolibc

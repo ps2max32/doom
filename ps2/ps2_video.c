@@ -289,6 +289,16 @@ void I_StartTic(void) {
 /* ---- main ----------------------------------------------------------------- */
 
 int doom_main(int argc, char **argv);
+/* maxsdk's virtual memory (<mx/vm.h>): the game and its malloc in VM, paged
+   to a swap file next to the ELF; what the GS reads by DMA (libgl's arenas
+   and textures) pinned. MX_MEMORY=phys: no VM, everything in the 32 MiB */
+#if PS2_VM
+#include <mx/vm.h>
+const struct mx_vm_config mx_vm_config = {
+    .swap = "doom.swp",
+};
+#endif
+
 int main(int argc, char **argv) {
   static char line[256] = "doom -iwad doom2.wad -nomouse " PS2_ARGS;
   static char *args[32];
