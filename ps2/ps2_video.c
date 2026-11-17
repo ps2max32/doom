@@ -86,7 +86,7 @@ static void start_mode(void) {
   if (mxgl_set_mode(mode) < 0)
     mx_printf("ps2: beam racing: not enough memory\n");
   mx_frame_vsync(1); /* a frame a field */
-  field_rate = mxgl_mode() == MXGL_PAL ? 50 : 60;
+  field_rate = mxgl_hz();
 }
 
 void I_PreInitGraphics(void) {

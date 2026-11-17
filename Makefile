@@ -21,7 +21,7 @@ MX_KERNEL ?= 1
 all: $(OUT)/doom.elf $(OUT)/prboom-plus.wad
 include $(MXGL)/mk/mxgl.mk
 include $(MAXSDK)/mk/maxsdk.mk
-MX_CORE_OBJS = $(MXGL_OBJS)
+MX_FAST_OBJS = $(MXGL_OBJS)
 
 PICOLIBC_SRC ?= $(PS2MAX)/libs/picolibc
 PICOLIBC := $(LIBOUT)/picolibc/install
