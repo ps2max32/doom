@@ -103,9 +103,19 @@ $(OUT)/rdatawad: $(wildcard $(DATA)/rd_*.c $(DATA)/rd_*.h)
 $(OUT)/prboom-plus.wad: $(OUT)/rdatawad $(HERE)/ps2/wadcmd.txt
 	$(OUT)/rdatawad -I $(DATA) $$(cat $(HERE)/ps2/wadcmd.txt) -o $@
 
+# The store's package (ps2max32/store docs/index-format.md, "The package"):
+# doom/ with the program, prboom-plus.wad and its game.ini (ps2/game.ini: the
+# IWAD in PS2MAX/DATA/doom), no game data. The CI releases it on a tag v*
+package: $(OUT)/doom-ps2max.zip
+$(OUT)/doom-ps2max.zip: $(OUT)/doom.elf $(OUT)/prboom-plus.wad $(HERE)/ps2/game.ini
+	rm -rf $(OUT)/pkg && mkdir -p $(OUT)/pkg/doom
+	$(LLVM)/llvm-strip -o $(OUT)/pkg/doom/doom.elf $(OUT)/doom.elf
+	cp $(OUT)/prboom-plus.wad $(HERE)/ps2/game.ini $(OUT)/pkg/doom/
+	cd $(OUT)/pkg && python3 -c 'import sys, os, zipfile; z = zipfile.ZipFile(sys.argv[1], "w", zipfile.ZIP_DEFLATED); [z.write(os.path.join(d, f)) for d, _, fs in sorted(os.walk(sys.argv[2])) for f in sorted(fs)]; z.close()' $@ doom
+
 clean:
 	rm -rf $(filter-out $(LIBOUT)/picolibc,$(wildcard $(OUT)/*))
 
-.PHONY: all clean
+.PHONY: all clean package
 
 -include $(shell find $(OUT) -name '*.d' -not -path '*/picolibc/*' 2>/dev/null)

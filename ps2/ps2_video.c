@@ -299,15 +299,34 @@ const struct mx_vm_config mx_vm_config = {
 };
 #endif
 
+/* -data <dir>: the IWAD's directory (game.ini's data=, {data}: shared
+   PS2MAX/DATA/doom): any of the IWADs prboom-plus knows there (doom2.wad,
+   doom.wad, freedoom2.wad, ...); prboom-plus.wad and what the game writes
+   (its config, saves: HOME) next to the ELF. Without it as before: all of
+   it in ./doom, doom2.wad. The program's other arguments go to the game. */
 int main(int argc, char **argv) {
-  static char line[256] = "doom -iwad doom2.wad -nomouse " PS2_ARGS;
+  static char line[256] = "doom -nomouse " PS2_ARGS;
   static char *args[32];
   int n = 0;
   for (char *p = strtok(line, " "); p && n < 31; p = strtok(NULL, " "))
     args[n++] = p;
-  chdir("/doom");
-  setenv("HOME", "/doom", 1);
-  setenv("DOOMWADDIR", "/doom", 1);
+  const char *data = NULL;
+  for (int i = 1; i < argc; i++) {
+    if (!strcmp(argv[i], "-data") && i + 1 < argc)
+      data = argv[++i];
+    else if (n < 31)
+      args[n++] = argv[i];
+  }
+  if (data) {
+    setenv("HOME", "/", 1);
+    setenv("DOOMWADDIR", data, 1);
+  } else {
+    if (n < 30)
+      args[n++] = "-iwad", args[n++] = "doom2.wad";
+    chdir("/doom");
+    setenv("HOME", "/doom", 1);
+    setenv("DOOMWADDIR", "/doom", 1);
+  }
   return doom_main(n, args);
 }
 
