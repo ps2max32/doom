@@ -12,11 +12,9 @@ make [FRAMES=n] [ARGS="-warp 1 -skill 3"]   $(OUT)/doom.elf and prboom-plus.wad 
 The game reads its data from `/doom` on the host: put `prboom-plus.wad` and your own IWAD there
 (`doom2.wad` by default; `ARGS="-iwad doom.wad"` for another).
 
-The game runs in virtual memory (`MX_MEMORY=vm`), started by the kernel (`apps/mxos`), libgl in
-core, paged to `doom.swp` next to the ELF. Large maps need it: Doom II's MAP29 swaps 118 pages
-out and 17 in, nearly all at the load, and holds 50 frames a second. In physical memory
-(`MX_MEMORY=phys`) such a map runs out, and the textures that did not fit, the weapon's and the
-status bar's among them, show white.
+The game runs in virtual memory (an MXOS program), started by the kernel (`apps/mxos`), libgl in
+core, paged to the system's swap file. Large maps need it: Doom II's MAP29 swaps 118 pages
+out and 17 in, nearly all at the load, and holds 50 frames a second.
 
 `FRAMES=n` ends the program after n frames with a picture (`host:doom.tga`), the slowest second,
 the fields dropped, the GS and beam racing counters and the audio's, then the test end marker.
